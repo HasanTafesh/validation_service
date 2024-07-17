@@ -3,10 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.js')[env];  // Updated to use config.js
+const config = require(__dirname + '/../config/config.js')[process.env.NODE_ENV || 'development'];
 const db = {};
 
 let sequelize;
@@ -16,12 +13,21 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+// Error handling
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connection to the database has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
+
 fs
   .readdirSync(__dirname)
   .filter(file => {
     return (
       file.indexOf('.') !== 0 &&
-      file !== basename &&
+      file !== path.basename(__filename) &&
       file.slice(-3) === '.js' &&
       file.indexOf('.test.js') === -1
     );
