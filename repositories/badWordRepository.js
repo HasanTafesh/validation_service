@@ -17,7 +17,7 @@ class BadWordRepository extends BaseRepository {
   async create(data) {
     this.validateData(data);
     const record = await this.model.create(data);
-    await redis.hset(this.cacheKey, record.id, JSON.stringify(record));
+    await redis.hset(this.cacheKey, record.id, record.word);
     return record;
   }
 
@@ -26,7 +26,7 @@ class BadWordRepository extends BaseRepository {
     this.validateData(data);
     await this.model.update(data, { where: { id } });
     const updatedRecord = await this.model.findByPk(id);
-    await redis.hset(this.cacheKey, id, JSON.stringify(updatedRecord));
+    await redis.hset(this.cacheKey, id, record.word);
     return updatedRecord;
   }
 
