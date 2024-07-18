@@ -17,7 +17,7 @@ class EmailDomainRepository extends BaseRepository {
   async create(data) {
     this.validateData(data);
     const record = await this.model.create(data);
-    await redis.hset(this.cacheKey, record.id, JSON.stringify(record));
+    await redis.sadd(this.cacheKey, record.domain);
     return record;
   }
 
@@ -26,39 +26,39 @@ class EmailDomainRepository extends BaseRepository {
     this.validateData(data);
     await this.model.update(data, { where: { id } });
     const updatedRecord = await this.model.findByPk(id);
-    await redis.hset(this.cacheKey, id, JSON.stringify(updatedRecord));
+    await redis.sadd(this.cacheKey, updatedRecord.domain);
     return updatedRecord;
   }
 
   async delete(id) {
     await this.validateId(id);
-    await this.model.update({ deletedAt: new Date() }, { where: { id } });
-    await redis.hdel(this.cacheKey, id);
+    const deletedRecord = await this.model.findByPk(id);
+    if (deletedRecord) {
+      await this.model.update({ deletedAt: new Date() }, { where: { id } });
+      await redis.srem(this.cacheKey, deletedRecord.domain);
+    }
     return { id, deletedAt: new Date() };
   }
 
   async findById(id) {
-    try{
-      const record  = await this.model.findByPk(id);
+    try {
+      const record = await this.model.findByPk(id);
       return record;
-    }
-    catch(error){
+    } catch (error) {
       console.error(`Error finding email domain by id: ${id}`, error);
       throw error;
     }
   }
 
-
   async findAll() {
-    try{
+    try {
       const records = await this.model.findAll();
       return records;
-    }
-    catch (error){
+    } catch (error) {
       console.error('Error finding all email domains', error);
       throw error;
     }
-}
+  }
 }
 
 module.exports = new EmailDomainRepository();

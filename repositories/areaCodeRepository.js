@@ -8,15 +8,15 @@ class AreaCodeRepository extends BaseRepository {
   }
 
   validateData(data) {
-    if (!data.areaCode || data.areaCode.length < 3 || data.areaCode.length > 3) {
-      throw new Error('Invalid area code length. Must be 3 characters long.');
+    if (!data.areaCode || data.areaCode.length !== 3) {
+      throw new Error('Invalid area code. Must be 3 characters long.');
     }
   }
 
   async create(data) {
     this.validateData(data);
     const record = await this.model.create(data);
-    await redis.hset(this.cacheKey, record.id.toString(), record.areaCode);
+    await redis.sadd(this.cacheKey, record.areaCode);
     return record;
   }
 
@@ -25,40 +25,37 @@ class AreaCodeRepository extends BaseRepository {
     this.validateData(data);
     await this.model.update(data, { where: { id } });
     const updatedRecord = await this.model.findByPk(id);
-    await redis.hset(this.cacheKey, id.toString(), updatedRecord.areaCode);
+    await redis.sadd(this.cacheKey, updatedRecord.areaCode);
     return updatedRecord;
   }
 
   async delete(id) {
     await this.validateId(id);
     await this.model.update({ deletedAt: new Date() }, { where: { id } });
-    await redis.hdel(this.cacheKey, id.toString());
     const deletedRecord = await this.model.findByPk(id);
+    await redis.srem(this.cacheKey, deletedRecord.areaCode);
     return deletedRecord;
   }
 
   async findById(id) {
-    try{
-      const record  = await this.model.findByPk(id);
+    try {
+      const record = await this.model.findByPk(id);
       return record;
-    }
-    catch(error){
+    } catch (error) {
       console.error(`Error finding area code by id: ${id}`, error);
       throw error;
     }
   }
 
-
   async findAll() {
-    try{
+    try {
       const records = await this.model.findAll();
       return records;
-    }
-    catch (error){
+    } catch (error) {
       console.error('Error finding all area codes', error);
       throw error;
     }
-}
+  }
 }
 
 module.exports = new AreaCodeRepository();
