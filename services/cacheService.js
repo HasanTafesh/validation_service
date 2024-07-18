@@ -1,48 +1,59 @@
-const { EmailDomain, BadWord, CelebrityName, AreaCode } = require('../models');
+// redisCacheLoader.js
+
 const redis = require('../redisClient');
+const { EmailDomain, BadWord, CelebrityName, AreaCode } = require('../models');
 
 const loadEmailDomainsToCache = async () => {
   const emailDomains = await EmailDomain.findAll({ where: { deletedAt: null } });
   const emailDomainKey = 'emailDomains';
 
-  const pipeline = redis.pipeline();
+  await redis.del(emailDomainKey);
+
+  const multi = redis.pipeline();
   emailDomains.forEach(domain => {
-    pipeline.sadd(emailDomainKey, domain.domain);
+    multi.sadd(emailDomainKey, domain.domain);
   });
-  await pipeline.exec();
+  await multi.exec();
 };
 
 const loadBadWordsToCache = async () => {
   const badWords = await BadWord.findAll({ where: { deletedAt: null } });
   const badWordKey = 'badWords';
 
-  const pipeline = redis.pipeline();
+  await redis.del(badWordKey);
+
+  const multi = redis.pipeline();
   badWords.forEach(word => {
-    pipeline.sadd(badWordKey, word.word);
+    multi.sadd(badWordKey, word.word);
   });
-  await pipeline.exec();
+  await multi.exec();
 };
 
 const loadCelebrityNamesToCache = async () => {
   const celebrities = await CelebrityName.findAll({ where: { deletedAt: null } });
   const celebKey = 'celebrityNames';
 
-  const pipeline = redis.pipeline();
+  await redis.del(celebKey);
+
+  const multi = redis.pipeline();
   celebrities.forEach(celeb => {
-    pipeline.sadd(celebKey, `${celeb.firstName} ${celeb.lastName}`);
+    const fullName = `${celeb.firstName} ${celeb.lastName}`;
+    multi.sadd(celebKey, fullName);
   });
-  await pipeline.exec();
+  await multi.exec();
 };
 
 const loadAreaCodesToCache = async () => {
   const areaCodes = await AreaCode.findAll({ where: { deletedAt: null } });
   const areaCodeKey = 'areaCodes';
 
-  const pipeline = redis.pipeline();
+  await redis.del(areaCodeKey);
+
+  const multi = redis.pipeline();
   areaCodes.forEach(code => {
-    pipeline.sadd(areaCodeKey, code.areaCode);
+    multi.sadd(areaCodeKey, code.areaCode);
   });
-  await pipeline.exec();
+  await multi.exec();
 };
 
 const loadAllToCache = async () => {
@@ -50,7 +61,7 @@ const loadAllToCache = async () => {
     loadEmailDomainsToCache(),
     loadBadWordsToCache(),
     loadCelebrityNamesToCache(),
-    loadAreaCodesToCache(),
+    loadAreaCodesToCache()
   ]);
 };
 
@@ -59,5 +70,5 @@ module.exports = {
   loadBadWordsToCache,
   loadCelebrityNamesToCache,
   loadAreaCodesToCache,
-  loadAllToCache,
+  loadAllToCache
 };
