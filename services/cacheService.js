@@ -1,66 +1,48 @@
 const { EmailDomain, BadWord, CelebrityName, AreaCode } = require('../models');
 const redis = require('../redisClient');
 
-const clearAndLoadToCache = async (key, fetchFunction) => {
-  await redis.del(key);
-  const items = await fetchFunction();
-  for (const item of items) {
-    if (item.deletedAt === null) {
-      await redis.hset(key, item.id.toString(), JSON.stringify(item));
-    }
-  }
-};
-
 const loadEmailDomainsToCache = async () => {
-  const emailDomains = await EmailDomain.findAll();
+  const emailDomains = await EmailDomain.findAll({ where: { deletedAt: null } });
   const emailDomainKey = 'emailDomains';
-  await redis.del(emailDomainKey);
-  
-  for (const domain of emailDomains) {
-    if (domain.deletedAt === null) {
-      const emailDomainData = domain.domain;
-      await redis.hset(emailDomainKey, domain.id.toString(), emailDomainData);
-    }
-  }
+
+  const pipeline = redis.pipeline();
+  emailDomains.forEach(domain => {
+    pipeline.sadd(emailDomainKey, domain.domain);
+  });
+  await pipeline.exec();
 };
 
 const loadBadWordsToCache = async () => {
-  const badWords = await BadWord.findAll();
+  const badWords = await BadWord.findAll({ where: { deletedAt: null } });
   const badWordKey = 'badWords';
-  await redis.del(badWordKey);
-  
-  for (const word of badWords) {
-    if (word.deletedAt === null) {
-      const badWordData = word.word;
-      await redis.hset(badWordKey, word.id.toString(), badWordData);
-    }
-  }
+
+  const pipeline = redis.pipeline();
+  badWords.forEach(word => {
+    pipeline.sadd(badWordKey, word.word);
+  });
+  await pipeline.exec();
 };
 
 const loadCelebrityNamesToCache = async () => {
-  const celebrities = await CelebrityName.findAll();
+  const celebrities = await CelebrityName.findAll({ where: { deletedAt: null } });
   const celebKey = 'celebrityNames';
-  await redis.del(celebKey);
-  
-  for (const celeb of celebrities) {
-    if (celeb.deletedAt === null) {
-      const fullName = `${celeb.firstName} ${celeb.lastName}`;
-      await redis.hset(celebKey, celeb.id.toString(), fullName);
-    }
-  }
+
+  const pipeline = redis.pipeline();
+  celebrities.forEach(celeb => {
+    pipeline.sadd(celebKey, `${celeb.firstName} ${celeb.lastName}`);
+  });
+  await pipeline.exec();
 };
 
 const loadAreaCodesToCache = async () => {
-  const areaCodes = await AreaCode.findAll();
+  const areaCodes = await AreaCode.findAll({ where: { deletedAt: null } });
   const areaCodeKey = 'areaCodes';
-  await redis.del(areaCodeKey);
-  
-  for (const code of areaCodes) {
-    if (code.deletedAt === null) {
-      const areaCodeData = code.areaCode;
-      await redis.hset(areaCodeKey, code.id.toString(), areaCodeData);
-    }
-  }
+
+  const pipeline = redis.pipeline();
+  areaCodes.forEach(code => {
+    pipeline.sadd(areaCodeKey, code.areaCode);
+  });
+  await pipeline.exec();
 };
 
 const loadAllToCache = async () => {
@@ -68,7 +50,7 @@ const loadAllToCache = async () => {
     loadEmailDomainsToCache(),
     loadBadWordsToCache(),
     loadCelebrityNamesToCache(),
-    loadAreaCodesToCache()
+    loadAreaCodesToCache(),
   ]);
 };
 
@@ -77,5 +59,5 @@ module.exports = {
   loadBadWordsToCache,
   loadCelebrityNamesToCache,
   loadAreaCodesToCache,
-  loadAllToCache
+  loadAllToCache,
 };

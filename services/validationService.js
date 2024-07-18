@@ -4,8 +4,8 @@ const { EmailDomain, BadWord, CelebrityName } = require('../models');
 
 // Fetch data from Redis
 const fetchDataFromCache = async (key) => {
-  const cachedValue = await redis.hgetall(key);
-  return cachedValue ? Object.values(cachedValue) : null;
+  const cachedValues = await redis.smembers(key);
+  return cachedValues.length > 0 ? cachedValues : null;
 };
 
 // Validate email
@@ -59,10 +59,7 @@ const validateFullName = async (firstName, lastName) => {
 
   const celebrityNames = await fetchDataFromCache('celebrityNames');
   if (celebrityNames) {
-    const isCelebrity = celebrityNames.some(celeb => {
-      const [celebFirstName, celebLastName] = celeb.split(' ');
-      return celebFirstName === firstName && celebLastName === lastName;
-    });
+    const isCelebrity = celebrityNames.includes(`${firstName} ${lastName}`);
     if (isCelebrity) {
       return { firstName, lastName, valid: false, reason: 'Matches a celebrity name' };
     }
@@ -89,5 +86,5 @@ const validatePhoneNumber = async (phone) => {
 module.exports = {
   validateEmail,
   validateFullName,
-  validatePhoneNumber
+  validatePhoneNumber,
 };
