@@ -11,10 +11,11 @@ const areaCodeRoutes = require('./routes/areaCodeRoutes');
 const { loadAllToCache } = require('./services/cacheService');
 const cors = require('cors');
 
-app.use(cors());
-
 const app = express();
 app.use(bodyParser.json());
+
+app.use(cors());
+
 
 // Serve Swagger documentation
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
