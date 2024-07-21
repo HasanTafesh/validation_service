@@ -10,6 +10,18 @@
     "schemes": [
       "http"
     ],
+    "securityDefinitions": {
+      "apiKey": {
+        "type": "apiKey",
+        "name": "x-api-key",
+        "in": "header"
+      }
+    },
+    "security": [
+      {
+        "apiKey": []
+      }
+    ],
     "paths": {
       "/api/validation/validate": {
         "post": {
@@ -95,8 +107,16 @@
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
-          }
+          },
+          "security": [
+            {
+              "apiKey": []
+            }
+          ]
         }
       }
     }

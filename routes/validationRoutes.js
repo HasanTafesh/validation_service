@@ -57,6 +57,10 @@
  *                   type: boolean
  *                 reason:
  *                   type: string
+ *       401:
+ *         description: Unauthorized
+ *     security:
+ *       - apiKey: []
  */
 
 const express = require('express');
