@@ -14,7 +14,7 @@ const swaggerDefinition = {
       description: 'Local server',
     },
     {
-      url: 'https://your-service-name.onrender.com',
+      url: 'https://validation-service-u42j.onrender.com',
       description: 'Render server',
     },
   ],
