@@ -9,6 +9,9 @@ const celebrityNameRoutes = require('./routes/celebrityNameRoutes');
 const emailDomainRoutes = require('./routes/emailDomainRoutes');
 const areaCodeRoutes = require('./routes/areaCodeRoutes');
 const { loadAllToCache } = require('./services/cacheService');
+const cors = require('cors');
+
+app.use(cors());
 
 const app = express();
 app.use(bodyParser.json());
