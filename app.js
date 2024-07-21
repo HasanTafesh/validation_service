@@ -17,7 +17,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-// Serve Swagger documentation
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.use('/api/validation', validationRoutes);
