@@ -13,6 +13,10 @@ const swaggerDefinition = {
       url: 'http://localhost:3000',
       description: 'Local server',
     },
+    {
+      url: 'https://your-service-name.onrender.com',
+      description: 'Render server',
+    },
   ],
 };
 
