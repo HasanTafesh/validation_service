@@ -11,6 +11,7 @@ module.exports = {
       },
       areaCode: {
         type: Sequelize.STRING,
+        unique: true
       },
       deletedAt: {
         type: Sequelize.DATE

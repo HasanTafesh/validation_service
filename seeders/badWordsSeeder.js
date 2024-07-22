@@ -5,6 +5,7 @@ module.exports = {
     const currentDate = new Date();
     return queryInterface.bulkInsert('BadWords', [
       { word: 'badword', createdAt: currentDate, updatedAt: currentDate, deletedAt: null },
+      { word: 'badwordssss', createdAt: currentDate, updatedAt: currentDate, deletedAt: null },
     ], {});
   },
 

@@ -14,12 +14,22 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   CelebrityName.init({
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
+    firstName: {
+      type: DataTypes.STRING,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+    },
     deletedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'CelebrityName',
+    indexes: [
+      {
+        unique: true,
+        fields: ['firstName', 'lastName']
+      }
+    ]
   });
   return CelebrityName;
 };
