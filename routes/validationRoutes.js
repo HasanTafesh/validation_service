@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/validation/validate:
+ * /api/validation/:
  *   post:
  *     summary: Validate input data
  *     tags: [Validation]
@@ -76,6 +76,6 @@ const router = express.Router();
  *       401:
  *         description: Unauthorized
  */
-router.post('/validate', checkApiKey, validate);
+router.post('/', checkApiKey, validate);
 
 module.exports = router;
