@@ -9,6 +9,7 @@ const router = express.Router();
  * /api/validation/validate:
  *   post:
  *     summary: Validate input data
+ *     tags: [Validation]
  *     description: Validates the provided email, phone number, and full name.
  *     parameters:
  *       - in: header

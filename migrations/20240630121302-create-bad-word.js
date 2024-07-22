@@ -11,6 +11,7 @@ module.exports = {
       },
       word: {
         type: Sequelize.STRING
+        
       },
       createdAt: {
         allowNull: false,

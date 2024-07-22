@@ -14,7 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   AreaCode.init({
-    areaCode: DataTypes.STRING,
+    areaCode: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
     deletedAt: DataTypes.DATE
   }, {
     sequelize,

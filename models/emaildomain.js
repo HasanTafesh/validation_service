@@ -14,7 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   EmailDomain.init({
-    domain: DataTypes.STRING,
+    domain: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
     deletedAt: DataTypes.DATE
   }, {
     sequelize,

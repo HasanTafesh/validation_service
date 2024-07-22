@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       domain: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       deletedAt: {
         type: Sequelize.DATE

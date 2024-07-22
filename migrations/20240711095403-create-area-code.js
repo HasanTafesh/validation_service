@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       areaCode: {
-        type: Sequelize.STRING
+        type: Sequelize.STRINGz
       },
       deletedAt: {
         type: Sequelize.DATE

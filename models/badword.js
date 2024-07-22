@@ -14,7 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   BadWord.init({
-    word: DataTypes.STRING,
+    word: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
     deletedAt: DataTypes.DATE
   }, {
     sequelize,
