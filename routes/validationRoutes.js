@@ -9,7 +9,7 @@ const router = express.Router();
  *   post:
  *     summary: Validate input data
  *     tags: [Validation]
- *     description: Validates the provided email, phone number, and full name.
+ *     description: Validates the provided email, phone number, full name, and password.
  *     parameters:
  *       - in: header
  *         name: x-api-key
@@ -32,11 +32,14 @@ const router = express.Router();
  *                 type: string
  *               lastname:
  *                 type: string
+ *               password:
+ *                 type: string
  *             required:
  *               - email
  *               - phone
  *               - firstname
  *               - lastname
+ *               - password
  *     responses:
  *       200:
  *         description: Validation result
@@ -69,6 +72,15 @@ const router = express.Router();
  *                       firstname:
  *                         type: string
  *                       lastname:
+ *                         type: string
+ *                       valid:
+ *                         type: boolean
+ *                       reason:
+ *                         type: string
+ *                   password:
+ *                     type: object
+ *                     properties:
+ *                       password:
  *                         type: string
  *                       valid:
  *                         type: boolean

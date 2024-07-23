@@ -2,7 +2,6 @@ const validator = require('validator');
 const redis = require('../redisClient');
 const { validate } = require('deep-email-validator');
 
-
 const isMemberOfSet = async (key, value) => {
   return await redis.sismember(key, value);
 };
@@ -11,14 +10,13 @@ const validateEmail = async (email) => {
   try {
     const validationResult = await validate({
       email: email,
-      validateRegex: true,      // Check if the email format is valid
-      validateMx: true,         // Check if MX records are present
-      validateTypo: true,       // Check for common typos
-      validateDisposable: true, // Check if the email is from a disposable email service
-      validateSMTP: false       // Skip the SMTP server validation
+      validateRegex: true,
+      validateMx: true,
+      validateTypo: true,
+      validateDisposable: true,
+      validateSMTP: false
     });
 
-    // Check for inappropriate content
     const firstPart = email.split('@')[0];
     const badWordKey = 'badWords';
     const badWordExists = await isMemberOfSet(badWordKey, firstPart);
@@ -26,12 +24,10 @@ const validateEmail = async (email) => {
       return { email, valid: false, reason: 'Contains inappropriate content' };
     }
 
-    // Check for other validation errors
     if (!validationResult.valid) {
       return { email, valid: false, reason: validationResult.reason || 'Validation failed' };
     }
 
-    // If all validations passed, return true
     return { email, valid: true };
   } catch (error) {
     console.error('Error during email validation:', error.message);
@@ -42,7 +38,6 @@ const validateEmail = async (email) => {
     };
   }
 };
-
 
 const validateFullName = async (firstName, lastName) => {
   const validateName = async (name) => {
@@ -64,7 +59,7 @@ const validateFullName = async (firstName, lastName) => {
 
   const lastNameValidation = await validateName(lastName);
   if (!lastNameValidation.valid) return lastNameValidation;
-  
+
   const fullName = `${firstName} ${lastName}`;
   const celebKey = 'celebrityNames';
   const isCelebrity = await isMemberOfSet(celebKey, fullName);
@@ -84,19 +79,43 @@ const validatePhoneNumber = async (phone) => {
   const areaCodeKey = 'areaCodes';
   const isValid = await isMemberOfSet(areaCodeKey, areaCode);
 
-  let validationbollean;
-  if(isValid == 0){
-    validationbollean= false;
-  }
-  else{
-    validationbollean= true;
+  return { phone, valid: isValid === 1 };
+};
+
+// Password validation function
+const validatePassword = (password) => {
+  const minLength = 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  if (password.length < minLength) {
+    return { valid: false, reason: `Password must be at least ${minLength} characters long` };
   }
 
-  return { phone, valid: validationbollean };
+  if (!hasUppercase) {
+    return { valid: false, reason: 'Password must contain at least one uppercase letter' };
+  }
+
+  if (!hasLowercase) {
+    return { valid: false, reason: 'Password must contain at least one lowercase letter' };
+  }
+
+  if (!hasNumber) {
+    return { valid: false, reason: 'Password must contain at least one number' };
+  }
+
+  if (!hasSpecialChar) {
+    return { valid: false, reason: 'Password must contain at least one special character' };
+  }
+
+  return { valid: true };
 };
 
 module.exports = {
   validateEmail,
   validateFullName,
-  validatePhoneNumber
+  validatePhoneNumber,
+  validatePassword
 };

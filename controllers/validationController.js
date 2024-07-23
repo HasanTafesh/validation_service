@@ -1,5 +1,4 @@
-const { request } = require('express');
-const { validateEmail, validateFullName, validatePhoneNumber } = require('../services/validationService');
+const { validateEmail, validateFullName, validatePhoneNumber, validatePassword } = require('../services/validationService'); // Make sure to import validatePassword
 
 const validate = async (req, res) => {
   const results = [];
@@ -15,15 +14,14 @@ const validate = async (req, res) => {
       } else if (key.toLowerCase() === 'firstname' || key.toLowerCase() === 'lastname') {
         const { firstname, lastname } = item;
         result['fullname'] = await validateFullName(firstname, lastname);
-        break;
+      } else if (key.toLowerCase() === 'password') {
+        result[key] = await validatePassword(value);
       }
     }
     results.push(result);
   }
 
   res.json(results);
-
-  console.log();
 };
 
 module.exports = {
