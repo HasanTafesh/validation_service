@@ -95,6 +95,10 @@ const validatePassword = (password) => {
     return { valid: false, reason: `Password must be at least ${minLength} characters long` };
   }
 
+  if (hasSpaces) {
+    return { valid: false, reason: 'Password must not contain spaces' };
+  }
+
   if (!hasUppercase) {
     return { valid: false, reason: 'Password must contain at least one uppercase letter' };
   }
@@ -111,10 +115,6 @@ const validatePassword = (password) => {
     return { valid: false, reason: 'Password must contain at least one special character' };
   }
 
-  if (hasSpaces) {
-    return { valid: false, reason: 'Password must not contain spaces' };
-  }
-  
   return { valid: true };
 };
 
