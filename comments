@@ -1,0 +1,11 @@
+
+  // if (!validator.isEmail(email)) {
+  //   return { email, valid: false, reason: 'Invalid format' };
+  // }
+
+  // const domain = email.split('@')[1];
+  // const emailDomainKey = 'emailDomains';
+  // const domainExists = await isMemberOfSet(emailDomainKey, domain);
+  // if (!domainExists) {
+  //   return { email, valid: false, reason: 'Domain does not exist' };
+  // }

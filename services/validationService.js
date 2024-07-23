@@ -1,22 +1,16 @@
 const validator = require('validator');
 const redis = require('../redisClient');
+const { validate } = require('deep-email-validator');
+
 
 const isMemberOfSet = async (key, value) => {
   return await redis.sismember(key, value);
 };
 
 const validateEmail = async (email) => {
-  if (!validator.isEmail(email)) {
-    return { email, valid: false, reason: 'Invalid format' };
-  }
+  const validationResult = await validate(email);
 
-  const domain = email.split('@')[1];
-  const emailDomainKey = 'emailDomains';
-  const domainExists = await isMemberOfSet(emailDomainKey, domain);
-  if (!domainExists) {
-    return { email, valid: false, reason: 'Domain does not exist' };
-  }
-
+  // Check for inappropriate content
   const firstPart = email.split('@')[0];
   const badWordKey = 'badWords';
   const badWordExists = await isMemberOfSet(badWordKey, firstPart);
@@ -24,8 +18,18 @@ const validateEmail = async (email) => {
     return { email, valid: false, reason: 'Contains inappropriate content' };
   }
 
+  // Check for other validation errors
+  const validators = validationResult.validators;
+  for (const [key, result] of Object.entries(validators)) {
+    if (!result.valid) {
+      return { email, valid: false, reason: result.reason || `${key} validation failed` };
+    }
+  }
+
+  // If all validations passed, return true
   return { email, valid: true };
 };
+
 
 const validateFullName = async (firstName, lastName) => {
   const validateName = async (name) => {
@@ -54,7 +58,7 @@ const validateFullName = async (firstName, lastName) => {
   if (isCelebrity) {
     return { firstName, lastName, valid: false, reason: 'Matches a celebrity name' };
   }
-  
+
   return { firstName, lastName, valid: true };
 };
 
