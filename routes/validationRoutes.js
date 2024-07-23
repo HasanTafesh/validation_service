@@ -1,4 +1,3 @@
-// validationRoutes.js
 const express = require('express');
 const { validate } = require('../controllers/validationController');
 const checkApiKey = require('../middlewares/authMiddleware');
@@ -44,35 +43,37 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 email:
- *                   type: object
- *                   properties:
- *                     email:
- *                       type: string
- *                     valid:
- *                       type: boolean
- *                     reason:
- *                       type: string
- *                 phone:
- *                   type: object
- *                   properties:
- *                     phone:
- *                       type: string
- *                     valid:
- *                       type: boolean
- *                 fullname:
- *                   type: object
- *                   properties:
- *                     firstname:
- *                       type: string
- *                     lastname:
- *                       type: string
- *                     valid:
- *                       type: boolean
- *                     reason:
- *                       type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   email:
+ *                     type: object
+ *                     properties:
+ *                       email:
+ *                         type: string
+ *                       valid:
+ *                         type: boolean
+ *                       reason:
+ *                         type: string
+ *                   phone:
+ *                     type: object
+ *                     properties:
+ *                       phone:
+ *                         type: string
+ *                       valid:
+ *                         type: boolean
+ *                   fullname:
+ *                     type: object
+ *                     properties:
+ *                       firstname:
+ *                         type: string
+ *                       lastname:
+ *                         type: string
+ *                       valid:
+ *                         type: boolean
+ *                       reason:
+ *                         type: string
  *       401:
  *         description: Unauthorized
  */
