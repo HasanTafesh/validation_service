@@ -18,16 +18,16 @@ const validateEmail = async (email) => {
     return { email, valid: false, reason: 'Contains inappropriate content' };
   }
 
-  // Check for other validation errors
-  const validators = validationResult.validators;
-  for (const [key, result] of Object.entries(validators)) {
-    if (!result.valid) {
-      return { email, valid: false, reason: JSON.stringify(result.reason) || `${key} validation failed` };
-    }
-  }
+  // // Check for other validation errors
+  // const validators = validationResult.validators;
+  // for (const [key, result] of Object.entries(validators)) {
+  //   if (!result.valid) {
+  //     return { email, valid: false, reason: JSON.stringify(result.reason) || `${key} validation failed` };
+  //   }
+  // }
 
   // If all validations passed, return true
-  return { email, valid: true };
+  return { email, valid: validationResult };
 };
 
 
