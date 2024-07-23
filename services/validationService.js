@@ -8,26 +8,39 @@ const isMemberOfSet = async (key, value) => {
 };
 
 const validateEmail = async (email) => {
-  const validationResult = await validate(email);
+  try {
+    const validationResult = await validate({
+      email: email,
+      validateRegex: true,      // Check if the email format is valid
+      validateMx: true,         // Check if MX records are present
+      validateTypo: true,       // Check for common typos
+      validateDisposable: true, // Check if the email is from a disposable email service
+      validateSMTP: false       // Skip the SMTP server validation
+    });
 
-  // Check for inappropriate content
-  const firstPart = email.split('@')[0];
-  const badWordKey = 'badWords';
-  const badWordExists = await isMemberOfSet(badWordKey, firstPart);
-  if (badWordExists) {
-    return { email, valid: false, reason: 'Contains inappropriate content' };
+    // Check for inappropriate content
+    const firstPart = email.split('@')[0];
+    const badWordKey = 'badWords';
+    const badWordExists = await isMemberOfSet(badWordKey, firstPart);
+    if (badWordExists) {
+      return { email, valid: false, reason: 'Contains inappropriate content' };
+    }
+
+    // Check for other validation errors
+    if (!validationResult.valid) {
+      return { email, valid: false, reason: validationResult.reason || 'Validation failed' };
+    }
+
+    // If all validations passed, return true
+    return { email, valid: true };
+  } catch (error) {
+    console.error('Error during email validation:', error.message);
+    return {
+      email,
+      valid: false,
+      reason: `Validation error: ${error.message || 'Unknown error'}`
+    };
   }
-
-  // // Check for other validation errors
-  // const validators = validationResult.validators;
-  // for (const [key, result] of Object.entries(validators)) {
-  //   if (!result.valid) {
-  //     return { email, valid: false, reason: JSON.stringify(result.reason) || `${key} validation failed` };
-  //   }
-  // }
-
-  // If all validations passed, return true
-  return { email, valid: validationResult };
 };
 
 
