@@ -84,11 +84,12 @@ const validatePhoneNumber = async (phone) => {
 
 // Password validation function
 const validatePassword = (password) => {
-  const minLength = 8;
+  const minLength = 5;
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const hasSpaces = /\s/.test(password);
 
   if (password.length < minLength) {
     return { valid: false, reason: `Password must be at least ${minLength} characters long` };
@@ -110,6 +111,10 @@ const validatePassword = (password) => {
     return { valid: false, reason: 'Password must contain at least one special character' };
   }
 
+  if (hasSpaces) {
+    return { valid: false, reason: 'Password must not contain spaces' };
+  }
+  
   return { valid: true };
 };
 
