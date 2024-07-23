@@ -22,7 +22,7 @@ const validateEmail = async (email) => {
   const validators = validationResult.validators;
   for (const [key, result] of Object.entries(validators)) {
     if (!result.valid) {
-      return { email, valid: false, reason: result.reason || `${key} validation failed` };
+      return { email, valid: false, reason: JSON.stringify(result.reason) || `${key} validation failed` };
     }
   }
 
