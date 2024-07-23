@@ -55,10 +55,7 @@ const router = express.Router();
  *                       valid:
  *                         type: boolean
  *                       reason:
- *                         type: object
- *                         properties:
- *                           valid:
- *                              type: string
+ *                         type: string
  *                   phone:
  *                     type: object
  *                     properties:
