@@ -9,13 +9,25 @@ const validate = async (req, res) => {
     for (const [key, value] of Object.entries(item)) {
       if (key.toLowerCase() === 'email') {
         result[key] = await validateEmail(value);
+        if(result[key].status !== 200){
+          return res.status(result[key].status).json(result[key]);
+        }
       } else if (key.toLowerCase() === 'phone') {
         result[key] = await validatePhoneNumber(value);
+        if(result[key].status !== 200){
+          return res.status(result[key].status).json(result[key]);
+        }
       } else if (key.toLowerCase() === 'firstname' || key.toLowerCase() === 'lastname') {
         const { firstname, lastname } = item;
         result['fullname'] = await validateFullName(firstname, lastname);
+        if(result['fullname'].status !== 200){
+          return res.status(result['fullname'].status).json(result['fullname']);
+        }
       } else if (key.toLowerCase() === 'password') {
         result[key] = await validatePassword(value);
+        if(result[key].status !== 200){
+          return res.status(result[key].status).json(result[key]);
+        }
       }
     }
     results.push(result);
